@@ -39,12 +39,20 @@ export class AuthorizedPersonController {
     return this.authorizedPersonService.remove(+id);
   }
 
+  // @Post('register')
+  // @UseInterceptors(FileInterceptor('photo'))
+  // register(
+  //   @UploadedFile() photo: Express.Multer.File,
+  //   @Body() createAuthorizedPersonDto: CreateAuthorizedPersonDto,) {
+  //   return this.authorizedPersonService.register(createAuthorizedPersonDto, photo);
+  // }
+
   @Post('register')
   @UseInterceptors(FileInterceptor('photo'))
-  register(
+  registert(
     @UploadedFile() photo: Express.Multer.File,
-    @Body() createAuthorizedPersonDto: CreateAuthorizedPersonDto,) {
-    return this.authorizedPersonService.register(createAuthorizedPersonDto, photo);
+    @Body()data: any) {
+    return this.authorizedPersonService.register(data, photo);
   }
 
   @Post('verify')
