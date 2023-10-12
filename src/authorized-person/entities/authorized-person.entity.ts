@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Child } from "src/child/entities/child.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class AuthorizedPerson {
@@ -19,4 +20,12 @@ export class AuthorizedPerson {
 
   @Column('text', { nullable: true })
   face_id: string;
+
+  @ManyToOne(
+    () => Child,
+    child => child.authorizedPersons,
+    { onDelete: 'CASCADE' },
+  )
+  @JoinColumn()
+  child: Child;
 }

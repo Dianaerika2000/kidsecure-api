@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorizedPersonModule } from './authorized-person/authorized-person.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AwsRecognitionModule } from './aws-recognition/aws-recognition.module';
+import { ChildModule } from './child/child.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AwsRecognitionModule } from './aws-recognition/aws-recognition.module';
     }),
     AuthorizedPersonModule,
     AwsRecognitionModule,
+    ChildModule,
   ],
   controllers: [AppController],
   providers: [AppService],
