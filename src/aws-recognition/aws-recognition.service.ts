@@ -1,9 +1,13 @@
 import {
   CreateCollectionCommand,
+  GetContentModerationCommand,
+  GetLabelDetectionCommand,
   IndexFacesCommand,
   RekognitionClient,
   SearchFacesByImageCommand,
   SearchFacesByImageCommandOutput,
+  StartContentModerationCommand,
+  StartLabelDetectionCommand,
 } from '@aws-sdk/client-rekognition';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
@@ -226,6 +230,145 @@ export class AwsRecognitionService {
     return {
       profilePhotoUrl: s3ObjectUrl,
     };
+  }
+
+  async uploadVideoToS3(videoBuffer: Buffer, videoId: string): Promise<{ videoUrl: string }> {
+    const s3Bucket = this.configService.get('AWS_S3_BUCKET');
+
+    // Step 1: Connect to AWS S3 service
+    const s3Client = new S3Client({
+      region: this.configService.get('AWS_REGION_S3'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      },
+    });
+
+    // Step 2: Create an S3 object with the video
+    const s3Object = await s3Client.send(
+        new PutObjectCommand({
+        Bucket: s3Bucket,
+        Key: `video_${videoId}.mp4`,
+        Body: videoBuffer,
+        ContentType: 'video/mp4',
+      }),
+    );
+
+    const s3ObjectUrl = `https://${s3Bucket}.s3.amazonaws.com/video_${videoId}.mp4`;
+  
+    return {
+      videoUrl: s3ObjectUrl,
+    };
+  }
+
+  async startLabelDetection(bucketName: string, videoId: string) {
+    const rekognitionClient = new RekognitionClient({
+      region: this.configService.get('AWS_REGION_S3'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      }
+    });
+
+    const startLabelDetectionResult = await rekognitionClient.send(new StartLabelDetectionCommand({
+      Video: {
+        S3Object: {
+          Bucket: bucketName,
+          Name: `${videoId}`
+        }
+      },
+      MinConfidence: 50
+    }))
+
+    return startLabelDetectionResult
+  }
+
+  // async getLabelDetectionResults(jobId: string) {
+  //   const rekognitionClient = new RekognitionClient({
+  //     region: this.configService.get('AWS_REGION_S3'),
+  //     credentials: {
+  //       accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+  //       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+  //     }
+  //   });
+
+  //   const getLabelDetectionResult = await rekognitionClient.send(new StartLabelDetectionCommand({
+  //     JobId: jobId
+  //   }))
+
+  //   return getLabelDetectionResult
+  // }
+  
+  async startContentModeration(bucketName: string, videoId: string) {
+    const rekognitionClient = new RekognitionClient({
+      region: this.configService.get('AWS_REGION_S3'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      }
+    });
+
+    const startContentModerationResult = await rekognitionClient.send(new StartContentModerationCommand({
+      Video: {
+        S3Object: {
+          Bucket: bucketName,
+          Name: `${videoId}`
+        }
+      },
+      MinConfidence: 50
+    }))
+
+    return startContentModerationResult
+  }
+
+  async getLabelDetection(jobId: string) {
+    const rekognitionClient = new RekognitionClient({
+      region: this.configService.get('AWS_REGION_S3'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      }
+    });
+
+    let labels: any[] = [];
+    let nextToken: string | undefined;
+
+    do {
+      const response = await rekognitionClient.send(new GetLabelDetectionCommand({
+        JobId: jobId,
+        NextToken: nextToken
+      }));
+
+      nextToken = response.NextToken;
+      labels.push(response.Labels);
+    } while (nextToken);
+
+    return labels;
+  }
+
+  async getContentModeration(jobId: string) {
+    const rekognitionClient = new RekognitionClient({
+      region: this.configService.get('AWS_REGION_S3'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      }
+    });
+
+    let labels: any[] = [];
+    let nextToken: string | undefined;
+
+    do {
+      const response = await rekognitionClient.send(new GetContentModerationCommand({
+        JobId: jobId,
+        NextToken: nextToken
+      }));
+
+      nextToken = response.NextToken;
+      labels.push(response.ModerationLabels);
+    } while (nextToken);
+
+    return labels;
   }
 
 }

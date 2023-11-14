@@ -23,4 +23,32 @@ export class AwsRecognitionController {
   indexFaces(@Body('photo') photo: string) {
     return this.awsRecognitionService.indexFaces(photo);
   }
+
+  @Post('upload/video')
+  @UseInterceptors(FileInterceptor('video'))
+  uploadVideoToS3(
+    @UploadedFile() video: Express.Multer.File,
+    ) {
+    return this.awsRecognitionService.uploadVideoToS3(video.buffer, video.originalname);
+  }
+
+  @Post('detectLabels/video')
+  startLabelDetection(@Body('bucketName') bucketName: string, @Body('videoId')videoId: string) {
+    return this.awsRecognitionService.startLabelDetection(bucketName, videoId);
+  }
+
+  @Post('getLabelDetection')
+  getLabelDetection(@Body('jobId') jobId: string) {
+    return this.awsRecognitionService.getLabelDetection(jobId);
+  }
+
+  @Post('contentModeration/video')
+  startContentModeration(@Body('bucketName') bucketName: string, @Body('videoId')videoId: string) {
+    return this.awsRecognitionService.startContentModeration(bucketName, videoId);
+  }
+
+  @Post('getContentModeration')
+  getContentModeration(@Body('jobId') jobId: string) {
+    return this.awsRecognitionService.getContentModeration(jobId);
+  }
 }
