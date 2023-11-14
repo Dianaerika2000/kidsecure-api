@@ -6,6 +6,10 @@ import { AuthorizedPersonModule } from './authorized-person/authorized-person.mo
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AwsRecognitionModule } from './aws-recognition/aws-recognition.module';
 import { ChildModule } from './child/child.module';
+import { PersonModule } from './person/person.module';
+import { FatherModule } from './father/father.module';
+import { ClassroomModule } from './classroom/classroom.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -29,6 +33,10 @@ import { ChildModule } from './child/child.module';
     AuthorizedPersonModule,
     AwsRecognitionModule,
     ChildModule,
+    FatherModule,
+    PersonModule,
+    ClassroomModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
