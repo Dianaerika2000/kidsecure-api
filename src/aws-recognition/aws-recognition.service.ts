@@ -368,7 +368,6 @@ export class AwsRecognitionService {
       labels.push(response.ModerationLabels);
     } while (nextToken);
 
-    return labels;
+    return labels.flat();
   }
-
 }
