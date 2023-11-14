@@ -14,7 +14,6 @@ export class CreateAuthorizedPersonDto {
   @IsString()
   img_url?: string;
 
-  @IsOptional()
   @IsNumber()
-  user_id: number;
+  child_id: number;
 }

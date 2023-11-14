@@ -4,6 +4,7 @@ import { AuthorizedPersonController } from './authorized-person.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthorizedPerson } from './entities/authorized-person.entity';
 import { AwsRecognitionModule } from 'src/aws-recognition/aws-recognition.module';
+import { ChildModule } from 'src/child/child.module';
 
 @Module({
   controllers: [AuthorizedPersonController],
@@ -11,6 +12,7 @@ import { AwsRecognitionModule } from 'src/aws-recognition/aws-recognition.module
   imports: [
     TypeOrmModule.forFeature([AuthorizedPerson]),
     AwsRecognitionModule,
+    ChildModule,
   ],
   exports: [
     TypeOrmModule,

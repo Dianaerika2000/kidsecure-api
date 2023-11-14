@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuthorizedPerson } from './entities/authorized-person.entity';
 import { Repository } from 'typeorm';
 import { AwsRecognitionService } from 'src/aws-recognition/aws-recognition.service';
+import { ChildService } from 'src/child/child.service';
 
 @Injectable()
 export class AuthorizedPersonService {
@@ -12,6 +13,7 @@ export class AuthorizedPersonService {
     @InjectRepository(AuthorizedPerson)
     private authorizedPersonRepository: Repository<AuthorizedPerson>,
     private awsRecognitionService: AwsRecognitionService,
+    private childService: ChildService,
   ){}
 
   async create(createAuthorizedPersonDto: CreateAuthorizedPersonDto) {
@@ -29,9 +31,17 @@ export class AuthorizedPersonService {
       throw new NotFoundException('Face not found');
     
     }else {
+      const { child_id } = createAuthorizedPersonDto;
+      const child = await this.childService.findOne(child_id);
+
+      if (!child) {
+        throw new NotFoundException(`Child with ID ${child_id} not found`);
+      }
+
       let person = this.authorizedPersonRepository.create({...createAuthorizedPersonDto, 
         img_url: indexFacesResult.img_url, 
-        face_id: indexFacesResult.faceId
+        face_id: indexFacesResult.faceId,
+        child: child
       });
 
       return await this.authorizedPersonRepository.save(person);
