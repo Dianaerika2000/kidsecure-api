@@ -22,7 +22,11 @@ export class ChildService {
   }
 
   async findAll() {
-    return await this.childRepository.find();
+    return await this.childRepository.find({
+      order: {
+        id: 'ASC',
+      }
+    });
   }
 
   async findOne(id: number) {

@@ -49,7 +49,13 @@ export class AuthorizedPersonService {
   }
 
   async findAll() {
-    return await this.authorizedPersonRepository.find();
+    return await this.authorizedPersonRepository.find(
+      {
+        order: {
+          id: 'ASC',
+        },
+      }
+    );
   }
 
   async findOne(id: number) {

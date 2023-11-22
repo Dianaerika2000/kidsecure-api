@@ -31,7 +31,11 @@ export class FatherService {
   }
 
   async findAll() {
-    return await this.fatherRepository.find(); 
+    return await this.fatherRepository.find({
+      order: {
+        id: 'ASC',
+      }
+    }); 
   }
 
   async findOne(id: number) {

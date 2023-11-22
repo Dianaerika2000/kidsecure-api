@@ -21,7 +21,11 @@ export class ClassroomService {
   }
 
   async findAll() {
-    return await this.classroomRepository.find();
+    return await this.classroomRepository.find({
+      order: {
+        id: 'ASC',
+      }
+    });
   }
 
   async findOne(id: number) {
