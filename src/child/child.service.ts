@@ -30,7 +30,12 @@ export class ChildService {
   }
 
   async findOne(id: number) {
-    const child = await this.childRepository.findOneBy({ id });
+    const child = await this.childRepository
+      .createQueryBuilder('child')
+      .leftJoinAndSelect('child.fathers', 'fathers')
+      .leftJoinAndSelect('child.authorizedPersons', 'authorizedPersons')
+      .where('child.id = :id', { id })
+      .getOne();
 
     if (!child) {
       throw new NotFoundException('Child not found');
