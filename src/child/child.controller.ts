@@ -49,4 +49,11 @@ export class ChildController {
     @Param('fatherId', ParseIntPipe) fatherId: number) {
     return this.childService.registerFathersForChild2(childId, fatherId);
   }
+
+  @Get(':id/father')
+  getFathersForChild(
+    @Param('id', ParseIntPipe) childId: number
+  ) {
+    return this.childService.getFathersForChild(childId);
+  }
 }

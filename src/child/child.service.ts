@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFatherDto } from 'src/common/dtos/create-father.dto';
 import { FatherService } from '../father/father.service';
+import { Father } from 'src/father/entities/father.entity';
 
 @Injectable()
 export class ChildService {
@@ -102,5 +103,19 @@ export class ChildService {
     child.fathers = [...child.fathers, father];
     // Guardar el niño actualizado en la base de datos
     return this.childRepository.save(child);
+  }
+
+  async getFathersForChild(childId: number): Promise<Father[]> {
+    const child = await this.childRepository
+      .createQueryBuilder('child')
+      .leftJoinAndSelect('child.fathers', 'father')
+      .where('child.id = :id', { id: childId })
+      .getOne();
+
+    if (!child) {
+      throw new NotFoundException(`Child with ID ${childId} not found`);
+    }
+
+    return child.fathers;
   }
 }
