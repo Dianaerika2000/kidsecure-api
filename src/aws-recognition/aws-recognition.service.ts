@@ -370,4 +370,9 @@ export class AwsRecognitionService {
 
     return labels.flat();
   }
+
+  getOnlyLabels(labels: any[]) {
+    const namesLabel = labels.map((label) => label.ModerationLabel.Name);
+    return namesLabel;
+  }
 }

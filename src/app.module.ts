@@ -10,6 +10,7 @@ import { PersonModule } from './person/person.module';
 import { FatherModule } from './father/father.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { CommonModule } from './common/common.module';
+import { GoogleTranslateModule } from './google-translate/google-translate.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CommonModule } from './common/common.module';
     PersonModule,
     ClassroomModule,
     CommonModule,
+    GoogleTranslateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

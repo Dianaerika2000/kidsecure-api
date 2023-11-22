@@ -51,4 +51,9 @@ export class AwsRecognitionController {
   getContentModeration(@Body('jobId') jobId: string) {
     return this.awsRecognitionService.getContentModeration(jobId);
   }
+
+  @Post('labels')
+  getLabel(@Body() body: any) {
+    return this.awsRecognitionService.getOnlyLabels(body.labels);
+  }
 }
