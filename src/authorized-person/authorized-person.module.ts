@@ -16,6 +16,7 @@ import { ChildModule } from 'src/child/child.module';
   ],
   exports: [
     TypeOrmModule,
+    AuthorizedPersonService,
   ]
 })
 export class AuthorizedPersonModule {}

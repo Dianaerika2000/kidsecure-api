@@ -61,4 +61,9 @@ export class AuthorizedPersonController {
     @UploadedFile() photo: Express.Multer.File) {
     return this.authorizedPersonService.verifyFace(photo);
   }
+
+  @Get(':id/children')
+  getChildForAuthorizedPerson(@Param('id') id: number){
+    return this.authorizedPersonService.getChildForAuthorizedPerson(id);
+  }
 }

@@ -12,10 +12,14 @@ import {
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { GoogleTranslateService } from 'src/google-translate/google-translate.service';
 
 @Injectable()
 export class AwsRecognitionService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private googleTransalteService: GoogleTranslateService
+  ) {}
 
   async detectLabels(photo: string) {
     // Connects to AWS Rekognition service
@@ -371,8 +375,9 @@ export class AwsRecognitionService {
     return labels.flat();
   }
 
-  getOnlyLabels(labels: any[]) {
+  async getOnlyLabels(labels: any[]) {
     const namesLabel = labels.map((label) => label.ModerationLabel.Name);
-    return namesLabel;
+    const labelsTranslated = await this.googleTransalteService.translateText(namesLabel, 'es');
+    return labelsTranslated;
   }
 }

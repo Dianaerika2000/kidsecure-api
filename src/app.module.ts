@@ -11,6 +11,8 @@ import { FatherModule } from './father/father.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { CommonModule } from './common/common.module';
 import { GoogleTranslateModule } from './google-translate/google-translate.module';
+import { NotificationModule } from './notification/notification.module';
+import { OutpuControlModule } from './outpu-control/outpu-control.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { GoogleTranslateModule } from './google-translate/google-translate.modul
     ClassroomModule,
     CommonModule,
     GoogleTranslateModule,
+    NotificationModule,
+    OutpuControlModule,
   ],
   controllers: [AppController],
   providers: [AppService],

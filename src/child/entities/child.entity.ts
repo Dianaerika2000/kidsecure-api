@@ -1,6 +1,7 @@
 import { AuthorizedPerson } from "src/authorized-person/entities/authorized-person.entity";
 import { Classroom } from "src/classroom/entities/classroom.entity";
 import { Father } from "src/father/entities/father.entity";
+import { OutpuControl } from "src/outpu-control/entities/outpu-control.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -40,4 +41,10 @@ export class Child {
     classroom => classroom.children,
   )
   classroom: Classroom;
+
+  @OneToMany(
+    () => OutpuControl,
+    outputControl => outputControl.child
+  )
+  outputControls: OutpuControl[];
 }

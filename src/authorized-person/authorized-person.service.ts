@@ -6,6 +6,7 @@ import { AuthorizedPerson } from './entities/authorized-person.entity';
 import { Repository } from 'typeorm';
 import { AwsRecognitionService } from 'src/aws-recognition/aws-recognition.service';
 import { ChildService } from 'src/child/child.service';
+import { Child } from 'src/child/entities/child.entity';
 
 @Injectable()
 export class AuthorizedPersonService {
@@ -97,5 +98,15 @@ export class AuthorizedPersonService {
     } else {
       return await this.findByFaceId(verifyFaceResult.faceId);
     }
+  }
+
+  async getChildForAuthorizedPerson(authorizedPersonId: number): Promise<Child | undefined> {
+    const authorizedPerson = await this.authorizedPersonRepository
+      .createQueryBuilder('authorizedPerson')
+      .leftJoinAndSelect('authorizedPerson.child', 'child')
+      .where('authorizedPerson.id = :id', { id: authorizedPersonId })
+      .getOne();
+
+    return authorizedPerson?.child;
   }
 }
