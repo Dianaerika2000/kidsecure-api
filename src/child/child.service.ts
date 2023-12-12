@@ -127,4 +127,15 @@ export class ChildService {
 
     return child.fathers;
   }
+
+  async getAuthorizedPersonsForChild(childId: number) {
+    const child = await this.childRepository
+      .createQueryBuilder('child')
+      .leftJoinAndSelect('child.authorizedPersons', 'authorizedPerson')
+      .where('child.id = :id', { id: childId })
+      .getOne();
+  
+    return child?.authorizedPersons || [];
+  }
+  
 }

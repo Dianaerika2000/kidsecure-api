@@ -55,5 +55,14 @@ export class ChildController {
     @Param('id', ParseIntPipe) childId: number
   ) {
     return this.childService.getFathersForChild(childId);
+  
   }
+
+  @Get(':id/authorizedPerson')
+  getAuthorizedPersonsForChild(
+    @Param('id', ParseIntPipe) childId: number
+  ) {
+    return this.childService.getAuthorizedPersonsForChild(childId);
+  }
+
 }
