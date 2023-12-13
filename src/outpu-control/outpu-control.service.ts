@@ -5,7 +5,7 @@ import { AwsRecognitionService } from 'src/aws-recognition/aws-recognition.servi
 import { AuthorizedPersonService } from '../authorized-person/authorized-person.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OutpuControl } from './entities/outpu-control.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 @Injectable()
 export class OutpuControlService {
@@ -17,10 +17,6 @@ export class OutpuControlService {
   ){}
   create(createOutpuControlDto: CreateOutpuControlDto) {
     return 'This action adds a new outpuControl';
-  }
-
-  findAll() {
-    return `This action returns all outpuControl`;
   }
 
   findOne(id: number) {
@@ -59,5 +55,87 @@ export class OutpuControlService {
       person: outputControl.authorizedPerson.name
     }
   }
+
+  async findAll() {
+    const outputControls = await this.outpuControlRepository.find({
+      order: {
+        id: 'ASC',
+      },
+      relations: ['child', 'child.classroom', 'authorizedPerson'],
+    });
+  
+    // Mapea los resultados para obtener la información deseada
+    const formattedOutputControls = outputControls.map((outputControl) => {
+      // Agrega verificaciones de nulidad para evitar errores
+      const childName = outputControl.child?.name || 'N/A';
+      const classroomName = outputControl.child?.classroom?.name || 'N/A';
+      const personName = outputControl.authorizedPerson?.name || 'N/A';
+  
+      return {
+        title: outputControl.title,
+        childName,
+        date: outputControl.date,
+        personName,
+        classroomName,
+      };
+    });
+  
+    return formattedOutputControls;
+  }
+
+  async getOutputControlForClassroom(classroomId: number) {
+    const outputControls = await this.outpuControlRepository.find({
+      where: {
+        child: { classroom: { id: classroomId } },
+      },
+      order: {
+        id: 'ASC',
+      },
+      relations: ['child', 'child.classroom', 'authorizedPerson'],
+    });
+  
+    // Mapea los resultados para obtener la información deseada
+    const formattedOutputControls = outputControls.map((outputControl) => {
+      // Agrega verificaciones de nulidad para evitar errores
+      const childName = outputControl.child?.name || 'N/A';
+      const classroomName = outputControl.child?.classroom?.name || 'N/A';
+      const personName = outputControl.authorizedPerson?.name || 'N/A';
+  
+      return {
+        title: outputControl.title,
+        childName,
+        date: outputControl.date,
+        personName,
+        classroomName,
+      };
+    });
+  
+    return formattedOutputControls;
+  }
+
+  async getOutputControlByDate(startDate: Date, endDate: Date) {
+    const outputControls = await this.outpuControlRepository.find({
+      where: {
+        date: Between(startDate, endDate),
+      },
+      order: {
+        id: 'ASC',
+      },
+      relations: ['child', 'child.classroom', 'authorizedPerson'],
+    });
+
+    // Mapea los resultados para obtener la información deseada
+    const formattedOutputControls = outputControls.map((outputControl) => ({
+      title: outputControl.title,
+      childName: outputControl.child?.name,
+      date: outputControl.date,
+      personName: outputControl.authorizedPerson?.name,
+      classroom: outputControl.child?.classroom?.name,
+    }));
+
+    return formattedOutputControls;
+  }
+  
+
   
 }
