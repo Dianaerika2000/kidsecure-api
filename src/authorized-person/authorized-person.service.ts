@@ -7,13 +7,19 @@ import { Repository } from 'typeorm';
 import { AwsRecognitionService } from 'src/aws-recognition/aws-recognition.service';
 import { ChildService } from 'src/child/child.service';
 import { Child } from 'src/child/entities/child.entity';
+import { OutpuControl } from 'src/outpu-control/entities/outpu-control.entity';
 
 @Injectable()
 export class AuthorizedPersonService {
   constructor(
     @InjectRepository(AuthorizedPerson)
     private authorizedPersonRepository: Repository<AuthorizedPerson>,
+
+    @InjectRepository(OutpuControl)
+    private outpuControlRepository: Repository<OutpuControl>,
+    
     private awsRecognitionService: AwsRecognitionService,
+
     private childService: ChildService,
   ){}
 
@@ -86,8 +92,24 @@ export class AuthorizedPersonService {
     return await this.authorizedPersonRepository.save(person);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} authorizedPerson`;
+  async remove(id: number) {
+    const authorizedPerson = await this.authorizedPersonRepository.findOne({
+      where: { id },
+      relations: ['outputControls'],
+    });
+
+    if (!authorizedPerson) {
+      throw new NotFoundException(`Authorized person with ID ${id} not found`);
+    }
+
+    // Verifica si la propiedad outputControls existe y tiene al menos un elemento
+    if (authorizedPerson.outputControls && authorizedPerson.outputControls.length > 0) {
+      // Si existen registros en outputControls, los elimina de la tabla OutpuControl
+      await this.outpuControlRepository.remove(authorizedPerson.outputControls);
+    }
+
+    // Elimina la persona autorizada
+    return await this.authorizedPersonRepository.remove(authorizedPerson);
   }
 
   async verifyFace(photo: Express.Multer.File) {

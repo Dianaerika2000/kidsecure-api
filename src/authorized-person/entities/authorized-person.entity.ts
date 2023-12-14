@@ -13,7 +13,8 @@ export class AuthorizedPerson extends Person {
 
   @OneToMany(
     () => OutpuControl,
-    outputControl => outputControl.authorizedPerson
+    outputControl => outputControl.authorizedPerson,
+    { cascade: ['remove'] }
   )
   outputControls: OutpuControl[];
 }

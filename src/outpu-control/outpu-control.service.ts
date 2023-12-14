@@ -13,7 +13,6 @@ export class OutpuControlService {
     @InjectRepository(OutpuControl)
     private outpuControlRepository: Repository<OutpuControl>,
     private authorizedPersonService: AuthorizedPersonService,
-    private awsRekognitionService: AwsRecognitionService,
   ){}
   create(createOutpuControlDto: CreateOutpuControlDto) {
     return 'This action adds a new outpuControl';
@@ -39,6 +38,10 @@ export class OutpuControlService {
     }
 
     const child = await this.authorizedPersonService.getChildForAuthorizedPerson(person.id)
+
+    if (!child) {
+      throw new NotFoundException('Esta persona no tiene un niño asignado');
+    }
 
     const outputControl = this.outpuControlRepository.create({
       title: 'Registro de salida',
@@ -136,6 +139,9 @@ export class OutpuControlService {
     return formattedOutputControls;
   }
   
+  async removeByConditions(conditions: Record<string, any>): Promise<void> {
+    await this.outpuControlRepository.delete(conditions);
+  }
 
   
 }

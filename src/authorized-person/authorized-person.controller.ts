@@ -35,8 +35,8 @@ export class AuthorizedPersonController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authorizedPersonService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.authorizedPersonService.remove(id);
   }
 
   // @Post('register')
