@@ -166,5 +166,20 @@ export class ChildService {
     // Luego, elimina al niño
    return await this.childRepository.remove(child);
   }
+
+  async getAllChildrenWithDetails(): Promise<any[]> {
+    const children = await this.childRepository.find({
+      relations: ['fathers', 'classroom'],
+    });
+  
+    return children.map(child => ({
+      nameChild: child.name,
+      fathers: child.fathers.map(father => ({
+        name: father.name,
+        cellphone: father.cellphone,
+      })),
+      classroom: child.classroom.name,
+    }));
+  }
    
 }

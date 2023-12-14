@@ -65,4 +65,9 @@ export class ChildController {
     return this.childService.getAuthorizedPersonsForChild(childId);
   }
 
+  @Get('parents/contact')
+  getAllChildrenWithDetails() {
+    return this.childService.getAllChildrenWithDetails();
+  }
+
 }
