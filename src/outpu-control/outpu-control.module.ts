@@ -15,6 +15,10 @@ import { OutpuControl } from './entities/outpu-control.entity';
     AuthorizedPersonModule,
   ],
   controllers: [OutpuControlController],
-  providers: [OutpuControlService]
+  providers: [OutpuControlService],
+  exports: [
+    TypeOrmModule,
+    OutpuControlService,
+  ]
 })
 export class OutpuControlModule {}

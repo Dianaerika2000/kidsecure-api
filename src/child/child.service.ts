@@ -7,12 +7,22 @@ import { Repository } from 'typeorm';
 import { CreateFatherDto } from 'src/common/dtos/create-father.dto';
 import { FatherService } from '../father/father.service';
 import { Father } from 'src/father/entities/father.entity';
+import { AuthorizedPersonService } from 'src/authorized-person/authorized-person.service';
+import { OutpuControl } from 'src/outpu-control/entities/outpu-control.entity';
+import { AuthorizedPerson } from 'src/authorized-person/entities/authorized-person.entity';
 
 @Injectable()
 export class ChildService {
   constructor(
     @InjectRepository(Child)
     private childRepository: Repository<Child>,
+
+    @InjectRepository(OutpuControl)
+    private outputControlRepository: Repository<OutpuControl>,
+
+    @InjectRepository(AuthorizedPerson)
+    private authorizedPersonRepository: Repository<AuthorizedPerson>,
+
     private readonly fatherService: FatherService,
   ) {}
 
@@ -55,10 +65,6 @@ export class ChildService {
     }
 
     return await this.childRepository.save(child);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} child`;
   }
 
   async registerFatherForChild(childId: number, fatherData: CreateFatherDto, file: Express.Multer.File): Promise<Child> {
@@ -137,5 +143,28 @@ export class ChildService {
   
     return child?.authorizedPersons || [];
   }
+
+  async remove(id: number) {
+    const child = await this.childRepository.findOne({
+      where: { id },
+      relations: ['authorizedPersons', 'outputControls'],
+    });
   
+    if (!child) {
+      throw new NotFoundException('Child not found');
+    }
+  
+    // Elimina registros relacionados en las tablas AuthorizedPerson y OutpuControl
+    if (child.authorizedPersons && child.authorizedPersons.length > 0) {
+      await this.authorizedPersonRepository.remove(child.authorizedPersons);
+    }
+  
+    if (child.outputControls && child.outputControls.length > 0) {
+      await this.outputControlRepository.remove(child.outputControls);
+    }
+  
+    // Luego, elimina al niño
+   return await this.childRepository.remove(child);
+  }
+   
 }

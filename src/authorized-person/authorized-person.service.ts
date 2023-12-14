@@ -131,4 +131,8 @@ export class AuthorizedPersonService {
 
     return authorizedPerson?.child;
   }
+
+  async removeByConditions(conditions: Record<string, any>): Promise<void> {
+    await this.authorizedPersonRepository.delete(conditions);
+  }
 }
